@@ -136,11 +136,20 @@ public class ActionFactory implements Listener {
 			}
 		}
 		// -- End logic to determine what to check -- //
-		IAction action = new Action(ActionType.COOK, getItemName(itemToCheck), String.valueOf(itemToCheck.getDurability()));
-		INoItemPlayer player = getPlayer(event.getWhoClicked());;
-		if(!player.canDoAction(action)) {
-			event.setCancelled(true);
-			player.notifyPlayer(action);
+		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		short dur = itemToCheck.getDurability();
+		IAction actionWithData = new Action(ActionType.COOK, getItemName(itemToCheck), String.valueOf(dur));
+		if(dur != 0) {
+			if(!player.canDoAction(actionWithData)) {
+				event.setCancelled(true);
+				player.notifyPlayer(actionWithData);
+			}
+		} else {
+			IAction action = new Action(ActionType.COOK, getItemName(itemToCheck));
+			if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+				event.setCancelled(true);
+				player.notifyPlayer(action);
+			}
 		}
 	}
 	
