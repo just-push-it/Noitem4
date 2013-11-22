@@ -1,0 +1,12 @@
+name: NoItem
+version: ${project.version}
+description: Permissions based event control
+authors: [nala3]
+
+main: net.worldoftomorrow.noitem.NoItem
+database: false
+
+commands:
+    noitem:
+        description: See usage for details
+        usage: /noitem reload <player> [-q (quiet)]
