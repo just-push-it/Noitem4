@@ -66,18 +66,6 @@ public class ActionFactory implements Listener {
 	}
 	
 	@EventHandler
-	public void itemCraftEvent(CraftItemEvent event) {
-		INoItemPlayer player = getPlayer(event.getWhoClicked());
-		ItemStack result = event.getRecipe().getResult();
-		IAction action = new Action(ActionType.CRAFT, getItemName(result));
-		IAction actionWithData = new Action(ActionType.CRAFT, getItemName(result), String.valueOf(result.getDurability()));
-		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
-			event.setCancelled(true);
-			player.notifyPlayer(action);
-		}
-	}
-	
-	@EventHandler
 	public void playerOpenInventoryEvent(InventoryOpenEvent event) {
 		InventoryType invType = event.getInventory().getType();
 		// These do not need to be checked for opening
@@ -93,7 +81,7 @@ public class ActionFactory implements Listener {
 	
 	// Crafting should only check for the item name with data since it makes a difference when crafting
 	@EventHandler
-	public void onPlayerCraftEvent(CraftItemEvent event) {
+	public void onPlayerCraftItem(CraftItemEvent event) {
 		INoItemPlayer player = getPlayer(event.getWhoClicked());;
 		ItemStack result = event.getRecipe().getResult();
 		short dur = result.getDurability();
