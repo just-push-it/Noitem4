@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -164,6 +165,19 @@ public class ActionFactory implements Listener {
 			event.setCancelled(true);
 			// Set the pickup delay to the same time as the message delay to prevent event spam
 			item.setPickupDelay(Integer.valueOf(ConfigManager.getInstance().getValue("notify.timeout")));
+			player.notifyPlayer(action);
+		}
+	}
+	
+	@EventHandler
+	public void onItemDrop(PlayerDropItemEvent event) {
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		Item item = event.getItemDrop();
+		ItemStack stack = item.getItemStack();
+		IAction action = new Action(ActionType.DROP, getItemName(stack));
+		IAction actionWithData = new Action(ActionType.DROP, getItemName(stack), String.valueOf(stack.getDurability()));
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
 			player.notifyPlayer(action);
 		}
 	}
