@@ -21,7 +21,7 @@ public class ConfigManager implements IConfigManager {
 	public String getValue(String key) {
 		String val = config.getValue(key);
 		if(val == null && !config.hasDefaultValue(key)) {
-			// Throw a runtime exception for if there is no such config value
+			// Throw a runtime exception if there is no such config value
 			throw new NoSuchConfigValueException(key);
 		} else if (val == null && config.hasDefaultValue(key)) {
 			return config.getDefaultValue(key);
