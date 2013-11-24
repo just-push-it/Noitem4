@@ -1,5 +1,6 @@
 package net.worldoftomorrow.noitem.config;
 
+import net.worldoftomorrow.noitem.NoItem;
 import net.worldoftomorrow.noitem.exceptions.NoSuchConfigValueException;
 import net.worldoftomorrow.noitem.interfaces.IConfigManager;
 import net.worldoftomorrow.noitem.interfaces.IConfiguration;
@@ -8,11 +9,9 @@ import net.worldoftomorrow.noitem.interfaces.INoItem;
 public class ConfigManager implements IConfigManager {
 
 	private IConfiguration config;
-	private static INoItem instance;
 	
 	public ConfigManager(INoItem plugin) {
 		this.config = plugin.getConfigFile();
-	    instance = plugin;
 	}
 
 	public String getDefaultValue(String key) {
@@ -39,7 +38,7 @@ public class ConfigManager implements IConfigManager {
 	}
 	
 	public static IConfigManager getInstance() {
-		return instance.getConfigManager();
+		return NoItem.getInstance().getConfigManager();
 	}
 
 }
