@@ -8,20 +8,16 @@ import net.worldoftomorrow.noitem.interfaces.IConfiguration;
 import net.worldoftomorrow.noitem.interfaces.INoItem;
 import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class NoItem extends JavaPlugin implements INoItem {
 
-	private static NoItem instance;
 	private ConfigManager configMan;
 	private ActionFactory actionFactory = new ActionFactory();
-	
-	public NoItem() {
-		instance = this;
-	}
-	
+
 	@Override
 	public void onEnable() {
 		this.configMan = new ConfigManager(this);
@@ -44,7 +40,7 @@ public class NoItem extends JavaPlugin implements INoItem {
 	}
 	
 	public static NoItem getInstance() {
-		return instance;
+		return (NoItem) Bukkit.getPluginManager().getPlugin("NoItem");
 	}
 
 }
