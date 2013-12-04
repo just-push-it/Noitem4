@@ -9,7 +9,9 @@ public enum ActionType {
 	PICKUP("pickup"),
 	DROP("drop"),
 	BREW("brew"), //
-	HOLD("hold");
+	HOLD("hold"),
+	ATTACK("attack"),
+	INTERACT_ENTITY("interact.entity");//
 	// Wear
 	// Enchant
 	// Repair

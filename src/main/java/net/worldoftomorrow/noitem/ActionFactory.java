@@ -8,6 +8,8 @@ import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -15,6 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -273,6 +277,22 @@ public class ActionFactory implements Listener {
 			// Should I also set the pickup time for the item?
 		}
 		
+	}
+	
+	@EventHandler
+	public void onPlayerAttackEntity(EntityDamageByEntityEvent event) {
+		if(event.getCause() != DamageCause.ENTITY_ATTACK) return;
+		Entity attacker = event.getDamager();
+		if(!(attacker instanceof Player)) return;
+		EntityType entityType = event.getEntityType();
+		// If it is not a living entity
+		if(!entityType.isAlive()) return;
+		INoItemPlayer player = getPlayer((HumanEntity) attacker);
+		IAction action = new Action(ActionType.ATTACK, entityType.toString().replaceAll("_", ""));
+		if(!player.canDoAction(action)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
 	}
 
 	// Forget this for now, this is no clean way to do it atm.
