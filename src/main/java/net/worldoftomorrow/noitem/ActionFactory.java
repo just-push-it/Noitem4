@@ -10,19 +10,23 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
@@ -159,6 +163,7 @@ public class ActionFactory implements Listener {
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		Item item = event.getItem();
 		ItemStack stack = item.getItemStack();
+
 		IAction action = new Action(ActionType.PICKUP, getItemName(stack));
 		IAction actionWithData = new Action(ActionType.PICKUP, getItemName(stack), String.valueOf(stack.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
@@ -174,6 +179,7 @@ public class ActionFactory implements Listener {
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		Item item = event.getItemDrop();
 		ItemStack stack = item.getItemStack();
+		
 		IAction action = new Action(ActionType.DROP, getItemName(stack));
 		IAction actionWithData = new Action(ActionType.DROP, getItemName(stack), String.valueOf(stack.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
@@ -182,6 +188,109 @@ public class ActionFactory implements Listener {
 		}
 	}
 	
+	// Click drop (&drag?) into slot
+	@EventHandler
+	public void onPlayerHoldItemClick(InventoryClickEvent event) {
+		Inventory inventory = event.getInventory();
+		if(inventory.getType() != InventoryType.CRAFTING) return;
+		if(event.getSlotType() != SlotType.QUICKBAR) return;
+		ItemStack toCheck = event.getCursor();
+		if(isAir(toCheck)) return;
+		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		if(event.getSlot() != player.getPlayer().getInventory().getHeldItemSlot()) return;
+		
+		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck), String.valueOf(toCheck.getDurability()));
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
+	}
+	// Scroll onto slot
+	@EventHandler
+	public void onPlayerHoldItemSwitch(PlayerItemHeldEvent event) {
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		ItemStack toCheck = player.getPlayer().getInventory().getItem(event.getNewSlot());
+		if(isAir(toCheck)) return;
+		
+		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
+	}
+	// Press number key onto slot
+	@EventHandler
+	public void onPlayerHoldItemKeyPress(InventoryClickEvent event) {
+		if(event.getClick() != ClickType.NUMBER_KEY) return;
+		// confirm this is the correct item to check
+		ItemStack toCheck = event.getCurrentItem();
+		if(isAir(toCheck)) return;
+		
+		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
+	}
+	//Shift click
+	@EventHandler
+	public void onPlayerHoldItemShiftClick(InventoryClickEvent event) {
+		if(!event.isShiftClick()) return;
+		ItemStack toCheck = event.getCurrentItem();
+		if(isAir(toCheck)) return;
+		if(event.getSlot() < 9) return;
+		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		int heldSlot = player.getPlayer().getInventory().getHeldItemSlot();
+		// if the first empty quickbar slot is not the held slot, return.
+		if(firstEmptyQuickbarSlot(player.getPlayer()) != heldSlot) return;
+		
+		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
+	}
+	//Pickup into slot
+	@EventHandler
+	public void onPlayerPickupItemHold(PlayerPickupItemEvent event) {
+		int firstEmpty = firstEmptyQuickbarSlot(event.getPlayer());
+		// If the quickbar is not full (-1) or the first empty slot is not the held slot, return.
+		if(firstEmpty == -1 || firstEmpty != event.getPlayer().getInventory().getHeldItemSlot()) return;
+		// At this point, the item being picked up SHOULD be going to the held item slot, so lets check it.
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		ItemStack toCheck = event.getItem().getItemStack();
+		
+		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+			// Should I also set the pickup time for the item?
+		}
+		
+	}
+
+	// Forget this for now, this is no clean way to do it atm.
+	/*@EventHandler
+	public void onBrewerClick(InventoryClickEvent event) {
+		InventoryType invType = event.getInventory().getType();
+		if(invType != InventoryType.BREWING) return;
+		BrewerInventory brewInv = (BrewerInventory) event.getInventory();
+		ItemStack ingredient = brewInv.getIngredient();
+		// 0 - 2 look to be items, 3 is ingredient
+		// net/minecraft/server/TileEntityBrewingStand.java#L13
+		ItemStack[] items = new ItemStack[] {
+			brewInv.getItem(0),
+			brewInv.getItem(1),
+			brewInv.getItem(2)
+		};
+	}*/
+
 	// Utility Method
 	private String getBlockName(Block b) {
 		return b.getType().toString().replace("_", "").toLowerCase();
@@ -196,7 +305,18 @@ public class ActionFactory implements Listener {
 	}
 	
 	private boolean isAir(ItemStack stack) {
+		if(stack == null) return true;
 		return stack.getType().equals(Material.AIR);
+	}
+	
+	// Returns -1 if there is no empty quickbar slot
+	private int firstEmptyQuickbarSlot(Player player) {
+		ItemStack itemInSlot;
+		for(int i = 0; i < 9; i++) {
+			itemInSlot = player.getInventory().getItem(i);
+			if(isAir(itemInSlot)) return i;
+		}
+		return -1;
 	}
 	
 	public INoItemPlayer getPlayer(HumanEntity player) {

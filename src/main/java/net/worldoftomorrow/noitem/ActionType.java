@@ -7,7 +7,13 @@ public enum ActionType {
 	COOK("cook"),
 	OPEN("open"),
 	PICKUP("pickup"),
-	DROP("drop");
+	DROP("drop"),
+	BREW("brew"), //
+	HOLD("hold");
+	// Wear
+	// Enchant
+	// Repair
+	// Interact (click on object?) & Use (click with object in hand?)
 	
 	String name;
 	
