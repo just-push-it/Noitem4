@@ -10,8 +10,9 @@ public enum ActionType {
 	DROP("drop"),
 	BREW("brew"), //
 	HOLD("hold"),
-	ATTACK("attack"),
-	INTERACT_ENTITY("interact.entity");//
+	INTERACT_ENTITY("interact.entity"),
+	INTERACT_OBJECT("interact.object"),
+	ATTACK("attack");
 	// Wear
 	// Enchant
 	// Repair

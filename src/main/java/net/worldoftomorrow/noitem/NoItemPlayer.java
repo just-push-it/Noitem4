@@ -72,10 +72,10 @@ public class NoItemPlayer implements INoItemPlayer  {
 
 	public void notifyPlayer(IAction action) {
 		if(this.shouldNotify(action)) {
-			String msg = ConfigManager.getInstance().getValue("notify.message");
+			String msg = ConfigManager.getInstance().getValue("notify.message." + action.getActionType().name);
 			msg = ChatColor.translateAlternateColorCodes('&', msg);
 			// Send the message
-			this.player.sendMessage(msg.replaceAll("\\$1", action.getActionType().name));
+			this.player.sendMessage(msg.replaceAll("\\$1", action.getObject()));
 			// Update the last notification time
 			this.notifyTimes.put(action.getActionPerm(), System.currentTimeMillis());
 		}
