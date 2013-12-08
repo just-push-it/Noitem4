@@ -14,18 +14,22 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -110,6 +114,7 @@ public class ActionFactory implements Listener {
 			}
 		}
 	}
+	
 	// Reference - org/bukkit/craftbukkit/inventory/CraftInventoryFurnace.java#L22
 	// Cooking also only checks with a second value
 	@EventHandler
@@ -270,23 +275,53 @@ public class ActionFactory implements Listener {
 		ItemStack toCheck = event.getItem().getItemStack();
 		
 		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
-		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck), String.valueOf(toCheck.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
 			event.setCancelled(true);
 			player.notifyPlayer(action);
 			// Should I also set the pickup time for the item?
 		}
+	}
+	
+	// Handle a player interacting with an object
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void onPlayerInteractObjectEvent(PlayerInteractEvent event) {
+		// Shouldn't need to do anything here
+		if(event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_AIR) return;
+		Block toCheck = event.getClickedBlock();
+		if(isAir(toCheck)) return;
+		IAction action = new Action(ActionType.INTERACT_OBJECT, getBlockName(toCheck));
+		IAction actionWithData = new Action(ActionType.INTERACT_OBJECT, getBlockName(toCheck), String.valueOf(toCheck.getData()));
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
+			event.setCancelled(true);
+			event.setUseInteractedBlock(Result.DENY);
+			event.setUseItemInHand(Result.DENY);
+			player.notifyPlayer(action);
+		}
 		
+	}
+	// Handle a player interacting with an entity
+	@EventHandler
+	public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		Entity clicked = event.getRightClicked();
+		IAction action = new Action(ActionType.INTERACT_ENTITY,clicked.getType().toString().toLowerCase().replaceAll("_", ""));
+		if(!player.canDoAction(action)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
 	}
 	
 	@EventHandler
 	public void onPlayerAttackEntity(EntityDamageByEntityEvent event) {
-		if(event.getCause() != DamageCause.ENTITY_ATTACK) return;
+		//if(event.getCause() != DamageCause.ENTITY_ATTACK) return;
 		Entity attacker = event.getDamager();
 		if(!(attacker instanceof Player)) return;
-		EntityType entityType = event.getEntityType();
+		EntityType entityType = event.getEntity().getType();
 		// If it is not a living entity
-		if(!entityType.isAlive()) return;
+		//if(!entityType.isAlive()) return; Forget this for now, that way minecarts and such are included
 		INoItemPlayer player = getPlayer((HumanEntity) attacker);
 		IAction action = new Action(ActionType.ATTACK, entityType.toString().replaceAll("_", ""));
 		if(!player.canDoAction(action)) {
@@ -327,6 +362,11 @@ public class ActionFactory implements Listener {
 	private boolean isAir(ItemStack stack) {
 		if(stack == null) return true;
 		return stack.getType().equals(Material.AIR);
+	}
+	
+	private boolean isAir(Block block) {
+		if(block == null) return true;
+		return block.getType().equals(Material.AIR);
 	}
 	
 	// Returns -1 if there is no empty quickbar slot
