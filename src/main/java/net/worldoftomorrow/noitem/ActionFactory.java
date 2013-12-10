@@ -83,6 +83,8 @@ public class ActionFactory implements Listener {
 		if(invType == InventoryType.PLAYER || invType == InventoryType.CREATIVE)
 			return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
+		// Apparently this might happen sometimes?
+		if(player == null) return;
 		IAction action = new Action(ActionType.OPEN, invType.toString().replaceAll("_", "").toLowerCase());
 		if(!player.canDoAction(action)) {
 			event.setCancelled(true);
