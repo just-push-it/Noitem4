@@ -1,5 +1,6 @@
 package net.worldoftomorrow.noitem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.worldoftomorrow.noitem.config.ConfigManager;
@@ -22,6 +23,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
@@ -39,6 +41,7 @@ import org.bukkit.inventory.ItemStack;
 public class ActionFactory implements Listener {
 
 	private HashMap<String, INoItemPlayer> players = new HashMap<String, INoItemPlayer>();
+	private ArrayList<INoItemPlayer> toUpdate = new ArrayList<INoItemPlayer> ();
 	
 	// This method is to keep track of players that join
 	@EventHandler
@@ -56,6 +59,7 @@ public class ActionFactory implements Listener {
 	@EventHandler
 	public void blockBreakEvent(BlockBreakEvent event) {
 		INoItemPlayer player = getPlayer(event.getPlayer());
+		if(player == null) return;
 		IAction action = new Action(ActionType.BREAK, getBlockName(event.getBlock()));
 		IAction actionWithData = new Action(ActionType.BREAK, getBlockName(event.getBlock()), String.valueOf(event.getBlock().getData()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
@@ -68,6 +72,7 @@ public class ActionFactory implements Listener {
 	@EventHandler
 	public void blockPlaceEvent(BlockPlaceEvent event) {
 		INoItemPlayer player = getPlayer(event.getPlayer());
+		if(player == null) return;
 		IAction action = new Action(ActionType.PLACE, getBlockName(event.getBlock()));
 		IAction actionWithData = new Action(ActionType.PLACE, getBlockName(event.getBlock()), String.valueOf(event.getBlock().getData()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
@@ -95,7 +100,8 @@ public class ActionFactory implements Listener {
 	// Crafting should only check for the item name with data since it makes a difference when crafting
 	@EventHandler
 	public void onPlayerCraftItem(CraftItemEvent event) {
-		INoItemPlayer player = getPlayer(event.getWhoClicked());;
+		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		if(player == null) return;
 		ItemStack result = event.getRecipe().getResult();
 		short dur = result.getDurability();
 		// Only check both permissions if the durability is 0
@@ -104,6 +110,7 @@ public class ActionFactory implements Listener {
 			if(!player.canDoAction(actionWithData)) {
 				event.setCancelled(true);
 				player.notifyPlayer(actionWithData);
+				this.toUpdate.add(player);
 			}
 		} else {
 			IAction actionWithData = new Action(ActionType.CRAFT, getItemName(result), String.valueOf(result.getDurability()));
@@ -111,7 +118,19 @@ public class ActionFactory implements Listener {
 			if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
 				event.setCancelled(true);
 				player.notifyPlayer(action);
+				this.toUpdate.add(player);
 			}
+		}
+	}
+	// Update the players inventory if they are marked for it.
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void updateInvOnClose(InventoryCloseEvent event) {
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		if(player == null) return;
+		if(toUpdate.contains(player)) {
+			player.getPlayer().updateInventory();
+			toUpdate.remove(player);
 		}
 	}
 	
@@ -151,6 +170,7 @@ public class ActionFactory implements Listener {
 		}
 		// -- End logic to determine what to check -- //
 		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		if(player == null) return;
 		short dur = itemToCheck.getDurability();
 		IAction actionWithData = new Action(ActionType.COOK, getItemName(itemToCheck), String.valueOf(dur));
 		if(dur != 0) {
@@ -206,6 +226,7 @@ public class ActionFactory implements Listener {
 		ItemStack toCheck = event.getCursor();
 		if(isAir(toCheck)) return;
 		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		if(player == null) return;
 		if(event.getSlot() != player.getPlayer().getInventory().getHeldItemSlot()) return;
 		
 		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
@@ -238,6 +259,7 @@ public class ActionFactory implements Listener {
 		if(isAir(toCheck)) return;
 		
 		INoItemPlayer player = getPlayer(event.getWhoClicked());
+		if(player == null) return;
 		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
 		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
