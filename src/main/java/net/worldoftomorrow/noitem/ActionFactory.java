@@ -206,6 +206,9 @@ public class ActionFactory implements Listener {
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
 		INoItemPlayer player = getPlayer(event.getPlayer());
+		// Okay seriously, why should this ever happen? Apparently it does though.
+		// I should probably find out why this would ever be null..
+		if(player == null) return;
 		Item item = event.getItemDrop();
 		ItemStack stack = item.getItemStack();
 		
