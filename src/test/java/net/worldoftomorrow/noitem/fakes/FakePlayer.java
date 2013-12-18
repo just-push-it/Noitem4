@@ -812,4 +812,10 @@ public class FakePlayer implements Player {
 
 	@Deprecated
 	public void updateInventory() {}
+
+	@Override
+	public void setResourcePack(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
