@@ -316,9 +316,10 @@ public class ActionFactory implements Listener {
 		if(event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_AIR) return;
 		Block toCheck = event.getClickedBlock();
 		if(isAir(toCheck)) return;
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		if(player == null) return;
 		IAction action = new Action(ActionType.INTERACT_OBJECT, getBlockName(toCheck));
 		IAction actionWithData = new Action(ActionType.INTERACT_OBJECT, getBlockName(toCheck), String.valueOf(toCheck.getData()));
-		INoItemPlayer player = getPlayer(event.getPlayer());
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
 			event.setCancelled(true);
 			event.setUseInteractedBlock(Result.DENY);
