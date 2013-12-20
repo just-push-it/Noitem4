@@ -27,7 +27,7 @@ public class CommandProcessor implements CommandExecutor {
 				if(args.length == 2) {
 					sender.sendMessage(ChatColor.RED + "The players permissions are successfully reloaded.");
 					return true;
-										// Case matters with switch arguments. duh.
+				// Case matters with switch arguments. duh.
 				} else if(args.length == 3) {
 					if (args[2].equals("-q")) {
 						return true;

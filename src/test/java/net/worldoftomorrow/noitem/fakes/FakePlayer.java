@@ -3,6 +3,7 @@ package net.worldoftomorrow.noitem.fakes;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +57,8 @@ public class FakePlayer implements Player {
 	public final Set<PermissionAttachmentInfo> effectivePermissions = new HashSet<PermissionAttachmentInfo>();
 	public final PermissionAttachment permAttachment;
 	
+	public String lastMessage;
+	
 	public FakePlayer() {
 		this.name = "TestPlayer";
 		this.permAttachment = new PermissionAttachment(new FakeNoItem(), this);
@@ -72,10 +75,6 @@ public class FakePlayer implements Player {
 	private void addDefaultEffectivePerms() {
 	}
 	
-	public void addPermission(String perm) {
-		this.effectivePermissions.add(new PermissionAttachmentInfo(this, perm, permAttachment, true));
-	}
-	
 	// Re-implemented methods
 	public String getName() {
 		return this.name;
@@ -85,6 +84,27 @@ public class FakePlayer implements Player {
 		return this.effectivePermissions;
 	}
 	
+	public void sendMessage(String msg) {
+		this.lastMessage = msg;
+	}
+	
+	public void addPermission(String perm) {
+		this.effectivePermissions.add(new PermissionAttachmentInfo(this, perm, permAttachment, true));
+	}
+
+	public boolean hasPermission(String toCheck) {
+		Iterator<PermissionAttachmentInfo> paii = this.getEffectivePermissions().iterator();
+		PermissionAttachmentInfo permInfo;
+		// Iterate through all set permissions
+		while(paii.hasNext()) {
+			permInfo = paii.next();
+			// Permissions matches and value is true
+			if(permInfo.getPermission().equalsIgnoreCase(toCheck) && permInfo.getValue()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
 	// Unused methods
@@ -500,10 +520,6 @@ public class FakePlayer implements Player {
 		return null;
 	}
 
-	public boolean hasPermission(String arg0) {
-		return false;
-	}
-
 	public boolean hasPermission(Permission arg0) {
 		return false;
 	}
@@ -540,8 +556,6 @@ public class FakePlayer implements Player {
 	public boolean isConversing() {
 		return false;
 	}
-
-	public void sendMessage(String arg0) {}
 
 	public void sendMessage(String[] arg0) {}
 

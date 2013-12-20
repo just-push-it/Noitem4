@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import net.worldoftomorrow.noitem.config.ConfigManager;
 import net.worldoftomorrow.noitem.interfaces.IAction;
+import net.worldoftomorrow.noitem.interfaces.IActionFactory;
 import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 
 import org.bukkit.Material;
@@ -38,7 +39,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-public class ActionFactory implements Listener {
+public class ActionFactory implements Listener, IActionFactory {
 
 	private HashMap<String, INoItemPlayer> players = new HashMap<String, INoItemPlayer>();
 	private ArrayList<INoItemPlayer> toUpdate = new ArrayList<INoItemPlayer> ();
