@@ -25,41 +25,41 @@ public class TestAction {
 	
 	@Test
 	public void objPermissionIsExpected() {
-		assertTrue(action.getObjectPerm().equals("noitem.object.stone.break"));
+		assertEquals(action.getObjectPerm(), "noitem.object.stone.break");
 	}
 	
 	@Test
 	public void actPermissionIsExpected() {
-		assertTrue(action.getActionPerm().equals("noitem.action.break.stone"));
+		assertEquals(action.getActionPerm(), "noitem.action.break.stone");
 	}
 	
 	@Test
 	public void actPermissionAllIsExpected() {
-		assertTrue(action.getAllActionPerm().equals("noitem.action.break.*"));
+		assertEquals(action.getAllActionPerm(), "noitem.action.break.*");
 	}
 	
 	@Test
 	public void objPermissionAllIsExpeceted() {
-		assertTrue(action.getAllObjectPerm().equals("noitem.object.stone.*"));
+		assertEquals(action.getAllObjectPerm(), "noitem.object.stone.*");
 	}
 	
 	@Test
 	public void actPermissionIsExpected2Obj() {
-		assertTrue(actionWithSecObj.getObjectPerm().equals("noitem.object.stone.1.break"));
+		assertEquals(actionWithSecObj.getObjectPerm(), "noitem.object.stone.1.break");
 	}
 	
 	@Test
 	public void objPermissionIsExpected2Obj() {
-		assertTrue(actionWithSecObj.getActionPerm().equals("noitem.action.break.stone.1"));
+		assertEquals(actionWithSecObj.getActionPerm(), "noitem.action.break.stone.1");
 	}
 	
 	@Test
 	public void actPermissionAllIsExpected2Obj() {
-		assertTrue(actionWithSecObj.getAllActionPerm().equals("noitem.action.break.*"));
+		assertEquals(actionWithSecObj.getAllActionPerm(), "noitem.action.break.*");
 	}
 	
 	@Test
 	public void objPermissionAllIsExpected2Obj() {
-		assertTrue(actionWithSecObj.getAllObjectPerm().equals("noitem.object.stone.1.*"));
+		assertEquals(actionWithSecObj.getAllObjectPerm(), "noitem.object.stone.1.*");
 	}
 }
