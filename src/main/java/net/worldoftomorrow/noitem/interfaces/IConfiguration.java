@@ -18,7 +18,7 @@ public interface IConfiguration {
 	public String getDefaultValue(String key);
 	
 	/**
-	 * Adds the default value with a boolean option to specify
+	 * Adds the default value with an boolean option to specify
 	 * whether to overwrite if the value already exists
 	 * @param key
 	 * @param value

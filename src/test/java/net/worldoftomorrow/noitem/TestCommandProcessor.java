@@ -1,13 +1,14 @@
 package net.worldoftomorrow.noitem;
 
 import static org.junit.Assert.assertTrue;
+import net.worldoftomorrow.noitem.fakes.FakeNoItem;
 import net.worldoftomorrow.noitem.fakes.FakePlayer;
 
 import org.bukkit.ChatColor;
 import org.junit.Test;
 
 public class TestCommandProcessor {
-	public final CommandProcessor testCmdProc = new CommandProcessor();
+	public final CommandProcessor testCmdProc = new CommandProcessor(new FakeNoItem());
 	
 	@Test
 	public void sendsPlayerMessageWhenArgsInvalid() {

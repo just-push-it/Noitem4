@@ -1,5 +1,7 @@
 package net.worldoftomorrow.noitem;
 
+import net.worldoftomorrow.noitem.interfaces.INoItem;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -8,24 +10,30 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandProcessor implements CommandExecutor {
+	
+	private final INoItem plugin;
+	
+	public CommandProcessor(INoItem plugin) {
+		this.plugin = plugin;
+	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdString, String[] args) {
 		if(sender instanceof Player && !((Player) sender).hasPermission("noitem.admin")) {
-			sender.sendMessage(ChatColor.RED + "You do not have permission to perform this command.");
+			sender.sendMessage(ChatColor.RED + plugin.getLang().$("command.nopermission"));
 			return true;
 		}
 		// /noitem reload <player> -q
-		final String usage = ChatColor.RED + "Usage: /noitem reload <playername> [-q (quiet)]";	
+		final String usage = ChatColor.RED + plugin.getLang().$("command.usage");	
 		if (args.length >= 1 && args.length <= 3) {
 			if(args[0].equalsIgnoreCase("reload") && args.length > 1) {
 				Player player = Bukkit.getPlayer(args[1]);
 				if(player == null) {
-					sender.sendMessage(ChatColor.RED + "Player not found.");
+					sender.sendMessage(ChatColor.RED + plugin.getLang().$("command.playernotfound"));
 					return true;
 				}
 				NoItem.getInstance().getNoItemPlayer(player).reloadPermissions();
 				if(args.length == 2) {
-					sender.sendMessage(ChatColor.RED + "The players permissions are successfully reloaded.");
+					sender.sendMessage(ChatColor.RED + plugin.getLang().$("command.reloadsuccess"));
 					return true;
 				// Case matters with switch arguments. duh.
 				} else if(args.length == 3) {

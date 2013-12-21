@@ -68,6 +68,7 @@ public class Configuration implements IConfiguration {
 				yamlConfig.set(entry.getKey(), entry.getValue());
 			}
 		}
+		if(this.actualFile == null) return;
 		try {
 			yamlConfig.save(actualFile);
 		} catch (IOException e) {
