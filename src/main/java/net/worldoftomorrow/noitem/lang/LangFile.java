@@ -22,6 +22,16 @@ public class LangFile implements ILangFile {
 		this.defaultValues.put("command.nopermission", "You do not have permission to perform this command.");
 		this.defaultValues.put("command.playernotfound", "Player not found.");
 		this.defaultValues.put("command.reloadsuccess", "The players permissions are successfully reloaded.");
+		this.defaultValues.put("notify.message.break", "&3You are not allowed to break $1.");
+		this.defaultValues.put("notify.message.place", "&3You can not place $1.");
+		this.defaultValues.put("notify.message.craft", "&3You can not craft $1.");
+		this.defaultValues.put("notify.message.cook", "&3You are not allowed to cook this $1.");
+		this.defaultValues.put("notify.message.open", "&3You are not allowed to open this.");
+		this.defaultValues.put("notify.message.pickup", "&3You can not pick that up.");
+		this.defaultValues.put("notify.message.drop", "&3You can not drop this.");
+		this.defaultValues.put("notify.message.hold", "&3You can not hold that.");
+		this.defaultValues.put("notify.message.interact.entity", "&3You can not interact with this entity.");
+		this.defaultValues.put("notify.message.interact.object", "&3You can not interact with this object");
 		
 		this.saveLangFile();
 	}

@@ -60,6 +60,10 @@ public class ItemChecks {
 		interactable.add(Material.WOOD_PLATE);
 		interactable.add(Material.WOODEN_DOOR);
 		interactable.add(Material.WORKBENCH);
+		interactable.add(Material.MELON_STEM);
+		interactable.add(Material.PUMPKIN_STEM);
+		interactable.add(Material.CARROT_STICK);
+		interactable.add(Material.POTATO);
 	}
 	
 	public static boolean isInteractable(ItemStack item) {
