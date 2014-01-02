@@ -11,7 +11,6 @@ import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -59,6 +58,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void blockBreakEvent(BlockBreakEvent event) {
+		if(event.isCancelled()) return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		if(player == null) return;
 		IAction action = new Action(ActionType.BREAK, getBlockName(event.getBlock()));
@@ -72,6 +72,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void blockPlaceEvent(BlockPlaceEvent event) {
+		if(event.isCancelled()) return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		if(player == null) return;
 		IAction action = new Action(ActionType.PLACE, getBlockName(event.getBlock()));
@@ -84,6 +85,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	
 	@EventHandler
 	public void playerOpenInventoryEvent(InventoryOpenEvent event) {
+		if(event.isCancelled()) return;
 		InventoryType invType = event.getInventory().getType();
 		// These do not need to be checked for opening
 		if(invType == InventoryType.PLAYER || invType == InventoryType.CREATIVE)
@@ -139,6 +141,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	// Cooking also only checks with a second value
 	@EventHandler
 	public void onPlayerCook(InventoryClickEvent event) {
+		if(event.isCancelled()) return;
 		InventoryType invType = event.getInventory().getType();
 		if(invType != InventoryType.FURNACE) return;
 		ItemStack itemToCheck;
@@ -190,6 +193,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	
 	@EventHandler
 	public void onItemPickup(PlayerPickupItemEvent event) {
+		if(event.isCancelled()) return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		Item item = event.getItem();
 		ItemStack stack = item.getItemStack();
@@ -206,6 +210,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	
 	@EventHandler
 	public void onItemDrop(PlayerDropItemEvent event) {
+		if(event.isCancelled()) return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		// Okay seriously, why should this ever happen? Apparently it does though.
 		// I should probably find out why this would ever be null..
@@ -224,6 +229,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	// Click drop (&drag?) into slot
 	@EventHandler
 	public void onPlayerHoldItemClick(InventoryClickEvent event) {
+		if(event.isCancelled()) return;
 		Inventory inventory = event.getInventory();
 		if(inventory.getType() != InventoryType.CRAFTING) return;
 		if(event.getSlotType() != SlotType.QUICKBAR) return;
@@ -243,12 +249,13 @@ public class ActionFactory implements Listener, IActionFactory {
 	// Scroll onto slot
 	@EventHandler
 	public void onPlayerHoldItemSwitch(PlayerItemHeldEvent event) {
+		if(event.isCancelled()) return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		ItemStack toCheck = player.getPlayer().getInventory().getItem(event.getNewSlot());
 		if(isAir(toCheck)) return;
 		
 		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
-		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck), String.valueOf(toCheck.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
 			event.setCancelled(true);
 			player.notifyPlayer(action);
@@ -257,6 +264,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	// Press number key onto slot
 	@EventHandler
 	public void onPlayerHoldItemKeyPress(InventoryClickEvent event) {
+		if(event.isCancelled()) return;
 		if(event.getClick() != ClickType.NUMBER_KEY) return;
 		// confirm this is the correct item to check
 		ItemStack toCheck = event.getCurrentItem();
@@ -265,7 +273,7 @@ public class ActionFactory implements Listener, IActionFactory {
 		INoItemPlayer player = getPlayer(event.getWhoClicked());
 		if(player == null) return;
 		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
-		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck), String.valueOf(toCheck.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
 			event.setCancelled(true);
 			player.notifyPlayer(action);
@@ -274,6 +282,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	//Shift click
 	@EventHandler
 	public void onPlayerHoldItemShiftClick(InventoryClickEvent event) {
+		if(event.isCancelled()) return;
 		if(!event.isShiftClick()) return;
 		ItemStack toCheck = event.getCurrentItem();
 		if(isAir(toCheck)) return;
@@ -284,7 +293,7 @@ public class ActionFactory implements Listener, IActionFactory {
 		if(firstEmptyQuickbarSlot(player.getPlayer()) != heldSlot) return;
 		
 		IAction action = new Action(ActionType.HOLD, getItemName(toCheck));
-		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck) ,String.valueOf(toCheck.getDurability()));
+		IAction actionWithData = new Action(ActionType.HOLD, getItemName(toCheck), String.valueOf(toCheck.getDurability()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
 			event.setCancelled(true);
 			player.notifyPlayer(action);
@@ -293,6 +302,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	//Pickup into slot
 	@EventHandler
 	public void onPlayerPickupItemHold(PlayerPickupItemEvent event) {
+		if(event.isCancelled()) return;
 		int firstEmpty = firstEmptyQuickbarSlot(event.getPlayer());
 		// If the quickbar is not full (-1) or the first empty slot is not the held slot, return.
 		if(firstEmpty == -1 || firstEmpty != event.getPlayer().getInventory().getHeldItemSlot()) return;
@@ -313,12 +323,19 @@ public class ActionFactory implements Listener, IActionFactory {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerInteractObjectEvent(PlayerInteractEvent event) {
+		if(event.isCancelled()) return;
 		// Shouldn't need to do anything here
 		if(event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_AIR) return;
+		// interacting should only be right click, #amiright?
+		if(event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK) return;
 		Block toCheck = event.getClickedBlock();
 		if(isAir(toCheck)) return;
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		if(player == null) return;
+		// If the item is not on the intractable item list
+		// This is to prevent blanket permissions from stopping blocks being broken
+		if(!ItemChecks.isInteractable(toCheck)) return;
+		
 		IAction action = new Action(ActionType.INTERACT_OBJECT, getBlockName(toCheck));
 		IAction actionWithData = new Action(ActionType.INTERACT_OBJECT, getBlockName(toCheck), String.valueOf(toCheck.getData()));
 		if(!player.canDoAction(action) || !player.canDoAction(actionWithData)) {
@@ -334,7 +351,7 @@ public class ActionFactory implements Listener, IActionFactory {
 	public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
 		INoItemPlayer player = getPlayer(event.getPlayer());
 		Entity clicked = event.getRightClicked();
-		IAction action = new Action(ActionType.INTERACT_ENTITY,clicked.getType().toString().toLowerCase().replaceAll("_", ""));
+		IAction action = new Action(ActionType.INTERACT_ENTITY, getEntityName(clicked));
 		if(!player.canDoAction(action)) {
 			event.setCancelled(true);
 			player.notifyPlayer(action);
@@ -346,11 +363,12 @@ public class ActionFactory implements Listener, IActionFactory {
 		//if(event.getCause() != DamageCause.ENTITY_ATTACK) return;
 		Entity attacker = event.getDamager();
 		if(!(attacker instanceof Player)) return;
-		EntityType entityType = event.getEntity().getType();
+		Entity attacked = event.getEntity();
 		// If it is not a living entity
-		//if(!entityType.isAlive()) return; Forget this for now, that way minecarts and such are included
+		// Forget this for now, that way minecarts and such are included
+		//if(!entityType.isAlive()) return;
 		INoItemPlayer player = getPlayer((HumanEntity) attacker);
-		IAction action = new Action(ActionType.ATTACK, entityType.toString().replaceAll("_", ""));
+		IAction action = new Action(ActionType.ATTACK, getEntityName(attacked));
 		if(!player.canDoAction(action)) {
 			event.setCancelled(true);
 			player.notifyPlayer(action);
@@ -380,6 +398,10 @@ public class ActionFactory implements Listener, IActionFactory {
 	
 	private String getItemName(ItemStack stack) {
 		return stack.getType().toString().replace("_", "").toLowerCase();
+	}
+	
+	private String getEntityName(Entity entity) {
+		return entity.getType().toString().toLowerCase().replaceAll("_", "");
 	}
 	
 	private boolean isSlotTopInventory(int rawSlot, InventoryView view) {
