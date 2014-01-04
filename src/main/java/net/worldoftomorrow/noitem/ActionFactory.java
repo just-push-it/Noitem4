@@ -374,6 +374,56 @@ public class ActionFactory implements Listener, IActionFactory {
 			player.notifyPlayer(action);
 		}
 	}
+	
+	@EventHandler
+	public void onPlayerUseEvent(PlayerInteractEvent event) {
+		if(event.isCancelled()) return;
+		ItemStack toCheck = event.getPlayer().getItemInHand();
+		IAction action;
+		if(event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK
+				&& ItemChecks.isUsableTool(toCheck)) {
+			Block clicked = event.getClickedBlock();
+			// If shears are used on anything but leaves with a left click block, return.
+			Material material = clicked.getType();
+			// If it is a shearable item
+			if(toCheck.getType().equals(Material.SHEARS) && !(material.equals(Material.LEAVES)
+					|| material.equals(Material.LEAVES_2) || material.equals(Material.DEAD_BUSH)
+					|| material.equals(Material.LONG_GRASS) || material.equals(Material.DOUBLE_PLANT))) {
+				return;
+			}
+			action = new Action(ActionType.USE, getItemName(toCheck));
+			// Use tool or something on block
+		} else if(event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK
+				&& ItemChecks.isUsableItem(toCheck)) {
+			// Shears do nothing when a block is right clicked
+			if(toCheck.getType().equals(Material.SHEARS)) return;
+			// F+S, Spawn Eggs, Water + Lava Bucket
+			action = new Action(ActionType.USE, getItemName(toCheck));
+		} else if (event.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+				&& ItemChecks.isUsableItem(toCheck)) {
+			// If they right clicked air with a fishing rod, set that as the action
+			// otherwise return, because there is nothing else to check.
+			if(toCheck.getType().equals(Material.FISHING_ROD)) {
+				action = new Action(ActionType.USE, getItemName(toCheck));
+			} else  {
+				return;
+			}
+		} else {
+			return;
+		}
+		INoItemPlayer player = getPlayer(event.getPlayer());
+		if(player == null) return;
+		if(!player.canDoAction(action)) {
+			event.setCancelled(true);
+			player.notifyPlayer(action);
+		}
+
+	}
+	
+	@EventHandler
+	public void onPlayerUseOnEntityEvent(PlayerInteractEntityEvent event) {
+		if(event.isCancelled()) return;
+	}
 
 	// Forget this for now, this is no clean way to do it atm.
 	/*@EventHandler
