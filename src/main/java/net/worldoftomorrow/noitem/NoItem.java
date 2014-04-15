@@ -23,6 +23,7 @@ public class NoItem extends JavaPlugin implements INoItem {
 	private IConfigManager configMan;
 	private ILang lang;
 	private ActionFactory actionFactory = new ActionFactory();
+	private boolean isWhitelistMode;
 
 	@Override
 	public void onEnable() {
@@ -30,6 +31,10 @@ public class NoItem extends JavaPlugin implements INoItem {
 		this.lang = new Lang(this);
 		this.getServer().getPluginManager().registerEvents(actionFactory, this);
 		this.getCommand("noitem").setExecutor(new CommandProcessor(this));
+		if(Boolean.valueOf(getConfigFile().getValue("debug_mode"))) {
+			this.getServer().getPluginManager().registerEvents(new DebugListener(), this);
+		}
+		this.isWhitelistMode = Boolean.valueOf(getConfigFile().getValue("permission_whitelist_mode"));
 	}
 	
 	public IConfiguration getConfigFile() {
@@ -58,6 +63,10 @@ public class NoItem extends JavaPlugin implements INoItem {
 
 	public ILang getLang() {
 		return this.lang;
+	}
+	
+	public boolean inWhitelistMode() {
+		return this.isWhitelistMode;
 	}
 
 }

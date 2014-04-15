@@ -28,4 +28,12 @@ public interface INoItemPlayer {
 	public Player getPlayer();
 	
 	public void notifyPlayer(IAction action);
+	
+	public long getLastHoldCancel();
+	
+	public void setLastHoldCancel(long time);
+	
+	public boolean isTaskScheduled();
+	
+	public void setTaskScheduled(boolean value);
 }

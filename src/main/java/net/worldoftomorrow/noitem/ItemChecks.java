@@ -103,6 +103,7 @@ public class ItemChecks {
 		usableTool.add(Material.WOOD_SPADE);
 		usableTool.add(Material.WOOD_SWORD);
 		usableTool.add(Material.SHEARS);
+		// Armor?
 	}
 	
 	public static boolean isInteractable(ItemStack item) {

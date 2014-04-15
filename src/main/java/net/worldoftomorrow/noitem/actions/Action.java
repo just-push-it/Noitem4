@@ -1,8 +1,11 @@
-package net.worldoftomorrow.noitem;
+package net.worldoftomorrow.noitem.actions;
+
+import org.bukkit.event.Cancellable;
 
 import net.worldoftomorrow.noitem.interfaces.IAction;
+import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 
-public class Action implements IAction {
+public abstract class Action implements IAction {
 	
 	private final String objPerm;
 	private final String actPerm;
@@ -68,5 +71,15 @@ public class Action implements IAction {
 	
 	public ActionType getActionType() {
 		return this.actionType;
+	}
+	
+	public void process(INoItemPlayer player, Cancellable event) {
+		// If event is cancelled already, no need to continue
+		if(event.isCancelled()) return;
+		// If they can do this action, no need to continue;
+		if(player.canDoAction(this)) return;
+		// Cancel the event and notify the player
+		event.setCancelled(true);
+		if(player.shouldNotify(this)) player.notifyPlayer(this);
 	}
 }

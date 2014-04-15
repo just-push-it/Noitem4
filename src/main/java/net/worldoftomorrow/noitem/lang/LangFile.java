@@ -33,6 +33,7 @@ public class LangFile implements ILangFile {
 		this.defaultValues.put("notify.message.interact.entity", "&3You can not interact with this entity.");
 		this.defaultValues.put("notify.message.interact.object", "&3You can not interact with this object");
 		this.defaultValues.put("notify.message.use", "&3You are not allowed to use this.");
+		this.defaultValues.put("notify.message.brew", "You are not allowed to brew that potion");
 		
 		this.saveLangFile();
 	}

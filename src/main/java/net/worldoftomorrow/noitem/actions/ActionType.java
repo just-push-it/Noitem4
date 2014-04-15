@@ -1,6 +1,7 @@
-package net.worldoftomorrow.noitem;
+package net.worldoftomorrow.noitem.actions;
 
 public enum ActionType {
+	TEST("test"), // This should only be used for test actions
 	BREAK("break"),
 	PLACE("place"),
 	CRAFT("craft"),
@@ -8,7 +9,7 @@ public enum ActionType {
 	OPEN("open"),
 	PICKUP("pickup"),
 	DROP("drop"),
-	BREW("brew"), //
+	BREW("brew"),
 	HOLD("hold"),
 	INTERACT_ENTITY("interact.entity"),
 	INTERACT_OBJECT("interact.object"),
@@ -19,7 +20,7 @@ public enum ActionType {
 	// Repair
 	// Interact (click on object?) & Use (click with object in hand?)
 	
-	String name;
+	public String name;
 	
 	private ActionType(String name) {
 		this.name = name;

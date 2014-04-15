@@ -1,6 +1,8 @@
 package net.worldoftomorrow.noitem.interfaces;
 
-import net.worldoftomorrow.noitem.ActionType;
+import org.bukkit.event.Cancellable;
+
+import net.worldoftomorrow.noitem.actions.ActionType;
 
 public interface IAction {
 	
@@ -17,4 +19,6 @@ public interface IAction {
 	public String getObject();
 	
 	public ActionType getActionType();
+	
+	public void process(INoItemPlayer player, Cancellable event);
 }

@@ -1,24 +1,26 @@
 package net.worldoftomorrow.noitem;
 
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import net.worldoftomorrow.noitem.config.ConfigManager;
 import net.worldoftomorrow.noitem.interfaces.IAction;
 import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 
 public class NoItemPlayer implements INoItemPlayer  {
-	
-	public final Player player;
-	private HashMap<String, Boolean> permissions;
+
+	public final UUID playerUUID;
+	//private HashMap<String, Boolean> permissions;
 	private HashMap<String, Long> notifyTimes = new HashMap<String, Long>();
+	private long holdLastCancel = 0L;
+	private boolean taskScheduled = false;
 
 	public NoItemPlayer(Player p) {
-		this.player = p;
+		this.playerUUID = p.getUniqueId();
 		this.reloadPermissions();
 	}
 
@@ -27,13 +29,15 @@ public class NoItemPlayer implements INoItemPlayer  {
 	 * that would make this false.
 	 */
 	public boolean canDoAction(IAction a) {
+		boolean whitelist = NoItem.getInstance().inWhitelistMode();
 		for(String perm : a.getAllPerms()) {
-			Boolean has = permissions.get(perm);
-			if(has != null && has) {
-				return false;
+			//Boolean has = permissions.get(perm);
+			boolean has = getPlayer().hasPermission(perm);
+			if(has) {
+				return whitelist; // false -> whitelist
 			}
 		}
-		return true;
+		return !whitelist; // true -> !whitelist
 	}
 
 	public boolean shouldNotify(IAction action) {
@@ -53,21 +57,22 @@ public class NoItemPlayer implements INoItemPlayer  {
 		} else return false;
 	}
 	
-	//TODO: UNIT TESTS
 	public void reloadPermissions() {
+		/*
 		// Blank the permissions
 		this.permissions = new HashMap<String, Boolean>();
 		
 		// Set load them from the effective permissions
-		Iterator<PermissionAttachmentInfo> perms = player.getEffectivePermissions().iterator();
+		Iterator<PermissionAttachmentInfo> perms = Bukkit.getPlayer(playerUUID).getEffectivePermissions().iterator();
 		while(perms.hasNext()) {
 			PermissionAttachmentInfo pai = perms.next();
 			this.permissions.put(pai.getPermission(), pai.getValue());
 		}
+		*/
 	}
 	
 	public Player getPlayer() {
-		return this.player;
+		return Bukkit.getPlayer(playerUUID);
 	}
 
 	public void notifyPlayer(IAction action) {
@@ -75,10 +80,26 @@ public class NoItemPlayer implements INoItemPlayer  {
 			String msg = NoItem.getInstance().getLang().$("notify.message." + action.getActionType().name);
 			msg = ChatColor.translateAlternateColorCodes('&', msg);
 			// Send the message
-			this.player.sendMessage(msg.replaceAll("\\$1", action.getObject()));
+			Bukkit.getPlayer(playerUUID).sendMessage(msg.replaceAll("\\$1", action.getObject()));
 			// Update the last notification time
 			this.notifyTimes.put(action.getActionPerm(), System.currentTimeMillis());
 		}
+	}
+	
+	public long getLastHoldCancel() {
+		return this.holdLastCancel;
+	}
+	
+	public void setLastHoldCancel(long time) {
+		this.holdLastCancel = time;
+	}
+	
+	public boolean isTaskScheduled() {
+		return this.taskScheduled;
+	}
+	
+	public void setTaskScheduled(boolean value) {
+		this.taskScheduled = value;
 	}
 
 }

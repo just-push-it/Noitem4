@@ -21,6 +21,8 @@ public class Configuration implements IConfiguration {
 		// Add Default Values Here
 		this.defaultValues.put("notify.timeout", "5");
 		this.defaultValues.put("notify.donotify", "true");
+		this.defaultValues.put("debug_mode", "false");
+		this.defaultValues.put("permission_whitelist_mode", "false");
 		// Then save the configuration
 		this.saveConfig();
 	}
