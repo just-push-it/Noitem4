@@ -3,28 +3,28 @@ package net.worldoftomorrow.noitem;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftInventoryView;
-import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_7_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftInventoryView;
+import org.bukkit.craftbukkit.v1_8_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R2.util.CraftMagicNumbers;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.potion.Potion;
 
-import net.minecraft.server.v1_7_R3.CraftingManager;
-import net.minecraft.server.v1_7_R3.InventoryCrafting;
-import net.minecraft.server.v1_7_R3.Item;
-import net.minecraft.server.v1_7_R3.ItemArmor;
-import net.minecraft.server.v1_7_R3.ItemBow;
-import net.minecraft.server.v1_7_R3.ItemShears;
-import net.minecraft.server.v1_7_R3.ItemStack;
-import net.minecraft.server.v1_7_R3.ItemSword;
-import net.minecraft.server.v1_7_R3.ItemTool;
-import net.minecraft.server.v1_7_R3.PacketPlayOutHeldItemSlot;
-import net.minecraft.server.v1_7_R3.PlayerInventory;
-import net.minecraft.server.v1_7_R3.TileEntityBrewingStand;
-import net.minecraft.server.v1_7_R3.TileEntityFurnace;
-import net.minecraft.server.v1_7_R3.World;
+import net.minecraft.server.v1_8_R2.CraftingManager;
+import net.minecraft.server.v1_8_R2.InventoryCrafting;
+import net.minecraft.server.v1_8_R2.Item;
+import net.minecraft.server.v1_8_R2.ItemArmor;
+import net.minecraft.server.v1_8_R2.ItemBow;
+import net.minecraft.server.v1_8_R2.ItemShears;
+import net.minecraft.server.v1_8_R2.ItemStack;
+import net.minecraft.server.v1_8_R2.ItemSword;
+import net.minecraft.server.v1_8_R2.ItemTool;
+import net.minecraft.server.v1_8_R2.PacketPlayOutHeldItemSlot;
+import net.minecraft.server.v1_8_R2.PlayerInventory;
+import net.minecraft.server.v1_8_R2.TileEntityBrewingStand;
+import net.minecraft.server.v1_8_R2.TileEntityFurnace;
+import net.minecraft.server.v1_8_R2.World;
 import net.worldoftomorrow.noitem.interfaces.INoItemPlayer;
 
 /**
@@ -76,7 +76,7 @@ public class H4x {
 		 * and returns the damage value of the resulting brew
 		 */
 		try {
-			net.minecraft.server.v1_7_R3.ItemStack ing = CraftItemStack.asNMSCopy(ingredient);
+			net.minecraft.server.v1_8_R2.ItemStack ing = CraftItemStack.asNMSCopy(ingredient);
 			short durability = base.getDurability();
 			int result = (Integer) getResultMethod.invoke(tebsInstance, durability, ing);
 			

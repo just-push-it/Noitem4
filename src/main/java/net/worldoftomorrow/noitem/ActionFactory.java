@@ -445,6 +445,13 @@ public class ActionFactory implements Listener, IActionFactory {
 	public void onPlayerUseOnEntityEvent(PlayerInteractEntityEvent event) {
 		if(event.isCancelled()) return;
 	}
+	
+	@EventHandler
+	public void onPlayerWearItem(InventoryClickEvent event) {
+		if(event.isCancelled()) return;
+		
+		
+	}
 
 	// Utility Methods
 	private boolean isAir(ItemStack stack) {

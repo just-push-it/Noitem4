@@ -14,8 +14,8 @@ public enum ActionType {
 	INTERACT_ENTITY("interact.entity"),
 	INTERACT_OBJECT("interact.object"),
 	ATTACK("attack"),
-	USE("use");
-	// Wear
+	USE("use"),
+	WEAR("wear");
 	// Enchant
 	// Repair
 	// Interact (click on object?) & Use (click with object in hand?)
